@@ -1,0 +1,4 @@
+# db.txt
+# Formato: pregunta|respuesta|idioma
+¿La UCR tiene becas?|Sí, la UCR ofrece becas, que se clasifican en: académicas, culturales y deportivas, socioeconómicas, entre otras.|es
+Does UCR offer scholarships?|Yes, UCR offers scholarships, classified as: academic, cultural, sports, socioeconomic, among others.|en
