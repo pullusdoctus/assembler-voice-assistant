@@ -3,7 +3,8 @@
 CXX = g++
 NASM = nasm
 CXXFLAGS = -Wall -O2 -I./src
-LDFLAGS = -lpocketsphinx -lsphinxbase -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
+#LDFLAGS = -lpocketsphinx -lsphinxbase -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
+LDFLAGS = -lpocketsphinx -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
 
 SRC_DIR = src
 OBJ_DIR = obj
