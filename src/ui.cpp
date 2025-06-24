@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#define FONT_PATH "./font/static/OpenSans-Regular.ttf"
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
@@ -72,7 +74,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     UIState ui;
-    TTF_Font* font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22);
+    TTF_Font* font = TTF_OpenFont(FONT_PATH, 22);
     if (!font) {
         SDL_Log("No se pudo cargar la fuente");
         SDL_DestroyRenderer(renderer);
