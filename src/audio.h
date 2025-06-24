@@ -1,4 +1,6 @@
 // audio.h
+// Interfaz de audio y reconocimiento de voz
+
 #ifndef AUDIO_H
 #define AUDIO_H
 
