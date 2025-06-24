@@ -1,4 +1,29 @@
 # db.txt
 # Formato: pregunta|respuesta|idioma
-¿La UCR tiene becas?|Sí, la UCR ofrece becas, que se clasifican en: académicas, culturales y deportivas, socioeconómicas, entre otras.|0
-Does UCR offer scholarships?|Yes, UCR offers scholarships, classified as: academic, cultural, sports, socioeconomic, among others.|1
+Hola|¡Hola! ¿En qué puedo ayudarte?|esp
+Hello|Hello! How can I help you?|eng
+Bonjour|Bonjour ! Comment puis-je vous aider ?|fra
+¿Cómo estás?|Estoy bien, gracias. ¿Y tú?|esp
+How are you?|I'm fine, thank you. And you?|eng
+Comment ça va ?|Je vais bien, merci. Et vous ?|fra
+¿La UCR tiene becas?|Sí, la UCR ofrece becas, que se clasifican en: académicas, culturales y deportivas, socioeconómicas, entre otras.|esp
+Does UCR offer scholarships?|Yes, UCR offers scholarships, classified as: academic, cultural, sports, socioeconomic, among others.|eng
+La UCR propose-t-elle des bourses?|Oui, l'UCR propose des bourses, classées en: académiques, culturelles, sportives, socio-économiques, entre autres.|fra
+¿Cuáles son los requisitos de admisión para la UCR?|Los requisitos de admisión incluyen solicitud completa, certificados académicos y dominio del idioma.|esp
+What are the admission requirements for UCR?|Admission requirements include a completed application, academic transcripts, and language proficiency.|eng
+Quels sont les critères d'admission à l'UCR?|Les critères d'admission incluent une demande complète, des relevés de notes et la maîtrise de la langue.|fra
+¿Dónde se encuentra la UCR?|La UCR se encuentra en San Pedro, Montes de Oca, San José, Costa Rica.|esp
+Where is UCR located?|UCR is located in San Pedro, Montes de Oca, San José, Costa Rica.|eng
+Où se trouve l'UCR?|L'UCR est située à San Pedro, Montes de Oca, San José, Costa Rica.|fra
+¿Cómo puedo contactar a la UCR?|Puedes contactar a la UCR a través de su sitio web oficial o por teléfono al +506 2511 0000.|esp
+How can I contact UCR?|You can contact UCR via their official website or by phone at +506 2511 0000.|eng
+Comment puis-je contacter l'UCR?|Vous pouvez contacter l'UCR via son site officiel ou par téléphone au +506 2511 0000.|fra
+¿Qué carreras de grado ofrece la UCR?|La UCR ofrece una amplia gama de carreras de grado en ciencias, artes, ingeniería y más.|esp
+What undergraduate programs does UCR offer?|UCR offers a wide range of undergraduate programs in sciences, arts, engineering, and more.|eng
+Quels programmes de premier cycle l'UCR propose-t-elle?|L'UCR propose une large gamme de programmes de premier cycle en sciences, arts, ingénierie, etc.|fra
+¿Hay apoyo para estudiantes con discapacidad?|Sí, la UCR brinda servicios de apoyo para estudiantes con discapacidad.|esp
+Is there support for students with disabilities?|Yes, UCR provides support services for students with disabilities.|eng
+Y a-t-il un soutien pour les étudiants en situation de handicap?|Oui, l'UCR offre des services de soutien pour les étudiants en situation de handicap.|fra
+¿Cuál es el sitio web oficial de la UCR?|El sitio web oficial es https://www.ucr.ac.cr/|esp
+What is the official website of UCR?|The official website is https://www.ucr.ac.cr/|eng
+Quel est le site officiel de l'UCR?|Le site officiel est https://www.ucr.ac.cr/|fra
