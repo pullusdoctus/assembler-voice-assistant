@@ -100,12 +100,8 @@ int main(int argc, char* argv[]) {
         SDL_FreeSurface(micSurface);
     }
     char respuesta_buffer[512];
-    // Tabla de códigos de idioma de 3 letras como enteros
-    const int idioma_codes[] = {
-        ('e' << 16) | ('s' << 8) | 'p', // esp
-        ('e' << 16) | ('n' << 8) | 'g', // eng
-        ('f' << 16) | ('r' << 8) | 'a'  // fra
-    };
+    // Tabla de códigos de idioma como enteros simples (0: Español, 1: Inglés, 2: Francés)
+    const int idioma_codes[] = {0, 1, 2};
     // Loop principal
     bool running = true;
     SDL_Event e;
@@ -177,7 +173,7 @@ int main(int argc, char* argv[]) {
                 else ui.preguntaActiva = false;
                 // Botón enviar
                 if (mx > btnEnviar.x && mx < btnEnviar.x+btnEnviar.w && my > btnEnviar.y && my < btnEnviar.y+btnEnviar.h) {
-                    buscar_respuesta(ui.pregunta.c_str(), respuesta_buffer, idioma_codes[ui.idioma]);
+                    buscar_respuesta(ui.pregunta.c_str(), respuesta_buffer, ui.idioma);
                     // Mensaje de no encontrado según idioma
                     std::string notfound;
                     switch (ui.idioma) {
