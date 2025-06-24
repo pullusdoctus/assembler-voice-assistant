@@ -109,6 +109,7 @@ int main(int argc, char* argv[]) {
     // Loop principal
     bool running = true;
     SDL_Event e;
+    bool escuchando = false;
     while (running) {
         // Render
         SDL_SetRenderDrawColor(renderer, bg.r, bg.g, bg.b, 255);
@@ -123,7 +124,14 @@ int main(int argc, char* argv[]) {
         SDL_RenderDrawRect(renderer, &preguntaRect);
         if (ui.preguntaActiva)
             SDL_RenderDrawRect(renderer, &preguntaRect); // Doble borde si activo
-        renderText(renderer, font, ui.pregunta.empty() ? "Escribe tu pregunta aquí..." : ui.pregunta, 350, 82, fg);
+        // Mensaje placeholder según idioma
+        std::string placeholder;
+        switch (ui.idioma) {
+            case 0: placeholder = "Escribe tu pregunta aquí..."; break;
+            case 1: placeholder = "Type your question here..."; break;
+            case 2: placeholder = "Écrivez votre question ici..."; break;
+        }
+        renderText(renderer, font, ui.pregunta.empty() ? placeholder : ui.pregunta, 350, 82, fg);
         // Botón enviar
         SDL_Rect btnEnviar = {580, 70, 120, 44};
         renderRoundedRect(renderer, btnEnviar, accent);
@@ -149,7 +157,14 @@ int main(int argc, char* argv[]) {
         SDL_SetRenderDrawColor(renderer, border.r, border.g, border.b, 255);
         SDL_RenderDrawRect(renderer, &respRect);
         renderSeparator(renderer, 140, 195, 560, border);
-        renderText(renderer, font, ui.respuesta.empty() ? "Respuesta aquí..." : ui.respuesta, 420, 220, fg);
+        // Mensaje de respuesta según idioma
+        std::string respuesta_placeholder;
+        switch (ui.idioma) {
+            case 0: respuesta_placeholder = "Respuesta aquí..."; break;
+            case 1: respuesta_placeholder = "Answer here..."; break;
+            case 2: respuesta_placeholder = "Réponse ici..."; break;
+        }
+        renderText(renderer, font, ui.respuesta.empty() ? respuesta_placeholder : ui.respuesta, 420, 220, fg);
         SDL_RenderPresent(renderer);
         // Eventos
         while (SDL_PollEvent(&e)) {
@@ -163,11 +178,33 @@ int main(int argc, char* argv[]) {
                 // Botón enviar
                 if (mx > btnEnviar.x && mx < btnEnviar.x+btnEnviar.w && my > btnEnviar.y && my < btnEnviar.y+btnEnviar.h) {
                     buscar_respuesta(ui.pregunta.c_str(), respuesta_buffer, idioma_codes[ui.idioma]);
-                    ui.respuesta = respuesta_buffer;
+                    // Mensaje de no encontrado según idioma
+                    std::string notfound;
+                    switch (ui.idioma) {
+                        case 0: notfound = "No se encontró respuesta"; break;
+                        case 1: notfound = "No answer found"; break;
+                        case 2: notfound = "Aucune réponse trouvée"; break;
+                    }
+                    ui.respuesta = (std::string(respuesta_buffer) == "No se encontró respuesta") ? notfound : respuesta_buffer;
                 }
                 // Botón micrófono
-                if (mx > btnMic.x && mx < btnMic.x+btnMic.w && my > btnMic.y && my < btnMic.y+btnMic.h)
-                    ui.respuesta = "[Grabando audio...]";
+                if (mx > btnMic.x && mx < btnMic.x+btnMic.w && my > btnMic.y && my < btnMic.y+btnMic.h) {
+                    if (!escuchando) {
+                        escuchando = true;
+                        switch (ui.idioma) {
+                            case 0: ui.respuesta = "[Escuchando... pulsa de nuevo para terminar]"; break;
+                            case 1: ui.respuesta = "[Listening... press again to finish]"; break;
+                            case 2: ui.respuesta = "[Écoute... appuyez à nouveau pour terminer]"; break;
+                        }
+                    } else {
+                        escuchando = false;
+                        switch (ui.idioma) {
+                            case 0: ui.respuesta = "No entendí, ¿puedes repetirlo?"; break;
+                            case 1: ui.respuesta = "Sorry, I didn't understand. Can you repeat?"; break;
+                            case 2: ui.respuesta = "Je n'ai pas compris, pouvez-vous répéter ?"; break;
+                        }
+                    }
+                }
                 // Selector idioma
                 for (int i = 0; i < 3; ++i) {
                     SDL_Rect idiomaBtn = {140 + i*140, 130, 120, 38};
