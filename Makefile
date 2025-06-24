@@ -4,7 +4,7 @@ CXX = g++
 NASM = nasm
 CXXFLAGS = -Wall -O2 -I./src
 #LDFLAGS = -lpocketsphinx -lsphinxbase -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
-LDFLAGS = -lpocketsphinx -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
+LDFLAGS = -lpocketsphinx -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -37,8 +37,8 @@ $(BIN): $(OBJS)
 $(OBJ_DIR)/ui.o: $(SRC_DIR)/ui.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(UI_BIN): $(OBJ_DIR)/ui.o
-	$(CXX) $(CXXFLAGS) $^ -o $@ -lSDL2 -lSDL2_ttf -lSDL2_image
+$(UI_BIN): $(OBJ_DIR)/ui.o $(OBJ_DIR)/assembler.o
+	$(CXX) $(CXXFLAGS) $^ -o $@ -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN) $(UI_BIN)

@@ -48,6 +48,8 @@ void renderSeparator(SDL_Renderer* renderer, int x, int y, int w, SDL_Color colo
     SDL_RenderDrawLine(renderer, x, y, x + w, y);
 }
 
+extern "C" void buscar_respuesta(const char* pregunta, char* respuesta, int idioma);
+
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         SDL_Log("No se pudo inicializar SDL: %s", SDL_GetError());
@@ -97,6 +99,13 @@ int main(int argc, char* argv[]) {
         micTexture = SDL_CreateTextureFromSurface(renderer, micSurface);
         SDL_FreeSurface(micSurface);
     }
+    char respuesta_buffer[512];
+    // Tabla de códigos de idioma de 3 letras como enteros
+    const int idioma_codes[] = {
+        ('e' << 16) | ('s' << 8) | 'p', // esp
+        ('e' << 16) | ('n' << 8) | 'g', // eng
+        ('f' << 16) | ('r' << 8) | 'a'  // fra
+    };
     // Loop principal
     bool running = true;
     SDL_Event e;
@@ -152,8 +161,10 @@ int main(int argc, char* argv[]) {
                     ui.preguntaActiva = true;
                 else ui.preguntaActiva = false;
                 // Botón enviar
-                if (mx > btnEnviar.x && mx < btnEnviar.x+btnEnviar.w && my > btnEnviar.y && my < btnEnviar.y+btnEnviar.h)
-                    ui.respuesta = "[Respuesta simulada]";
+                if (mx > btnEnviar.x && mx < btnEnviar.x+btnEnviar.w && my > btnEnviar.y && my < btnEnviar.y+btnEnviar.h) {
+                    buscar_respuesta(ui.pregunta.c_str(), respuesta_buffer, idioma_codes[ui.idioma]);
+                    ui.respuesta = respuesta_buffer;
+                }
                 // Botón micrófono
                 if (mx > btnMic.x && mx < btnMic.x+btnMic.w && my > btnMic.y && my < btnMic.y+btnMic.h)
                     ui.respuesta = "[Grabando audio...]";
