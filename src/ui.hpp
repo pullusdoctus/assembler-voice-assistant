@@ -97,6 +97,8 @@ class Ui {
   void updateAllWidgetsFont();
   void toggleBoldText();
   void toggleHighContrast();
+  void updateAllWidgetsColors();
+  GdkRGBA invert_color(const GdkRGBA& c);
   void changeLanguage(const char* language);
 
   // === CALLBACKS ===

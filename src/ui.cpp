@@ -327,15 +327,57 @@ void Ui::updateAllWidgetsFont() {
 }
 
 void Ui::toggleBoldText() {
-  toggle_bold(reinterpret_cast<uint8_t*>(&boldTextEnabled));
+  toggle(reinterpret_cast<uint8_t*>(&boldTextEnabled));
   updateAllWidgetsFont();
   std::cout << "Bold text " << (boldTextEnabled ? "enabled" : "disabled") << std::endl;
 }
 
 void Ui::toggleHighContrast() {
-  highContrastEnabled = !highContrastEnabled;
-  // Apply high contrast theme
+  toggle(reinterpret_cast<uint8_t*>(&highContrastEnabled));
+  updateAllWidgetsColors();
   std::cout << "High contrast " << (highContrastEnabled ? "enabled" : "disabled") << std::endl;
+}
+
+void Ui::updateAllWidgetsColors() {
+  GtkWidget* widgets[] = {
+    inputTextView,
+    responseTextView,
+    logoLabel,
+    sendButton,
+    accessibilityButton,
+    spanishButton,
+    englishButton,
+    frenchButton,
+    increaseFontButton,
+    decreaseFontButton,
+    boldTextButton,
+    contrastButton,
+    footerLabel
+  };
+  for (GtkWidget* w : widgets) {
+    GtkStyleContext* ctx = gtk_widget_get_style_context(w);
+    if (highContrastEnabled) {
+      // Get current fg and bg colors for NORMAL state
+      GdkRGBA fg, bg;
+      gtk_style_context_get_color(ctx, GTK_STATE_FLAG_NORMAL, &fg);
+      gtk_style_context_get_background_color(ctx, GTK_STATE_FLAG_NORMAL, &bg);
+      // invert colors
+      GdkRGBA inv_fg = invert_color(fg);
+      GdkRGBA inv_bg = invert_color(bg);
+      gtk_widget_override_background_color(w, GTK_STATE_FLAG_NORMAL, &inv_bg);
+      gtk_widget_override_color(w, GTK_STATE_FLAG_NORMAL, &inv_fg);
+    } else {
+      // Passing nullptr resets to default theme colors
+      gtk_widget_override_background_color(w, GTK_STATE_FLAG_NORMAL, nullptr);
+      gtk_widget_override_color(w, GTK_STATE_FLAG_NORMAL, nullptr);
+    }
+  }
+}
+
+GdkRGBA Ui::invert_color(const GdkRGBA& c) {
+  GdkRGBA inverted;
+  _invert_color(&c, &inverted);
+  return inverted;
 }
 
 void Ui::changeLanguage(const char* language) {
