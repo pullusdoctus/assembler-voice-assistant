@@ -1,8 +1,20 @@
 #include "assembler.hpp"
 #include "audio.hpp"
 #include "ui.hpp"
+#include <algorithm>
+#include <curl/curl.h>
+#include <cctype>
+#include <json/json.h>
+#include <sstream>
+#include <regex>
 #include <iostream>
 #include <cstring>
+
+static size_t writeCallback(void* contents, size_t size, size_t nmenb, HttpResponse* response) {
+  size_t totalSize = size * nmenb;
+  response->data.append((char*)contents, totalSize);
+  return totalSize;
+}
 
 // Static callback functions
 void Ui::on_window_destroy(GtkWidget* widget, gpointer data) { gtk_main_quit(); }
@@ -357,6 +369,95 @@ void Ui::changeLanguage(const char* language) {
   std::cout << "Language changed to: " << language << std::endl;
 }
 
+// API implementations
+std::string Ui::prompt(const std::string& prompt) {
+  CURL* curl;
+  CURLcode res;
+  HttpResponse response;
+  curl = curl_easy_init();
+  if (!curl) {
+    return "Error: Could not initialize HTTP client";
+  }
+  // Prepare JSON payload
+  Json::Value jsonPayload;
+  jsonPayload["prompt"] = prompt;
+  jsonPayload["model"] = "deepseek-r1:1.5b";
+  Json::StreamWriterBuilder builder;
+  std::string jsonString = Json::writeString(builder, jsonPayload);
+  // Set up headers
+  struct curl_slist* headers = nullptr;
+  headers = curl_slist_append(headers, "Content-Type: application/json");
+  // Configure curl
+  curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:3000/api/assembly/recognizer");
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonString.c_str());
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L); // 30 second timeout
+  // Perform the request
+  res = curl_easy_perform(curl);
+  // Clean up
+  curl_slist_free_all(headers);
+  curl_easy_cleanup(curl);
+  if (res != CURLE_OK) {
+    return "Error: Could not connect to API - " + std::string(curl_easy_strerror(res));
+  }
+  // Parse JSON response
+  try {
+    Json::Value jsonResponse;
+    Json::CharReaderBuilder readerBuilder;
+    std::string errs;
+    std::istringstream s(response.data);
+    if (!Json::parseFromStream(readerBuilder, s, &jsonResponse, &errs)) {
+      return "Error: Could not parse API response";
+    }
+    // Extract the AI response from the nested JSON structure
+    if (jsonResponse.isMember("data") && jsonResponse["data"].isMember("response")) {
+      std::string rawResponse = jsonResponse["data"]["response"].asString();
+      return cleanResponse(rawResponse);
+    } else {
+      return "Error: Unexpected API response format";
+    }
+  } catch (const std::exception& e) {
+    return "Error: " + std::string(e.what());
+  }
+}
+
+std::string Ui::cleanResponse(const std::string& response) {
+  std::string cleaned = response;
+  // Remove <think> blocks
+  size_t thinkStart = 0;
+  while ((thinkStart = cleaned.find("<think>", thinkStart)) != std::string::npos) {
+    size_t thinkEnd = cleaned.find("</think>", thinkStart);
+    if (thinkEnd != std::string::npos) {
+      // Remove the entire <think>...</think> block
+      cleaned.erase(thinkStart, thinkEnd - thinkStart + 8); // +8 for "</think>"
+    } else {
+      // If no closing tag found, remove from <think> to end
+      cleaned.erase(thinkStart);
+      break;
+    }
+  }
+  // Remove any remaining standalone <think> or </think> tags
+  size_t pos = 0;
+  while ((pos = cleaned.find("<think>", pos)) != std::string::npos) {
+    cleaned.erase(pos, 7); // Remove "<think>"
+  }
+  pos = 0;
+  while ((pos = cleaned.find("</think>", pos)) != std::string::npos) {
+    cleaned.erase(pos, 8); // Remove "</think>"
+  }
+  // Clean up any extra whitespace that might be left
+  // Remove leading whitespace
+  cleaned.erase(cleaned.begin(), std::find_if(cleaned.begin(), cleaned.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+  // Remove trailing whitespace
+  cleaned.erase(std::find_if(cleaned.rbegin(), cleaned.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), cleaned.end());
+  // Replace multiple consecutive newlines with double newlines max
+  std::regex multipleNewlines("\\n{3,}");
+  cleaned = std::regex_replace(cleaned, multipleNewlines, "\n\n");
+  return cleaned;
+}
+
 // Callback implementations
 void Ui::on_language_changed(GtkWidget* widget, gpointer data) {
   Ui* ui = static_cast<Ui*>(data);
@@ -420,11 +521,22 @@ void Ui::on_send_button_clicked(GtkWidget* widget, gpointer data) {
   Ui* ui = static_cast<Ui*>(data);
   const char* inputText = ui->getInputText();
   std::cout << "Sending question: " << inputText << std::endl;
-  // Example response
-  ui->setResponseText("Esta es una respuesta de ejemplo al asistente de voz inclusivo.\n\n"
-                     "El sistema ha procesado su consulta y está preparado para "
-                     "proporcionar asistencia en múltiples idiomas con opciones "
-                     "de accesibilidad completas.");
+  // Check if input is empty
+  if (!inputText || strlen(inputText) == 0) {
+    ui->setResponseText("Por favor, ingrese una pregunta antes de enviar.");
+    return;
+  }
+  // Show loading message
+  ui->setResponseText("🤔 Procesando su consulta...\nPor favor espere...");
+  // Force UI update to show loading message
+  while (gtk_events_pending()) {
+    gtk_main_iteration();
+  }
+  // Call the API
+  std::string apiResponse = ui->prompt(std::string(inputText));
+  // Display the response
+  ui->setResponseText(apiResponse.c_str());
+  std::cout << "API Response: " << apiResponse << std::endl;
 }
 
 void Ui::on_increase_font_clicked(GtkWidget* widget, gpointer data) {

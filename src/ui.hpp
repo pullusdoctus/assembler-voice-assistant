@@ -1,6 +1,13 @@
 #pragma once
 
 #include <gtk/gtk.h>
+#include <string>
+
+struct HttpResponse {
+  std::string data;
+};
+
+static size_t writeCallback(void* contents, size_t size, size_t nmemb, HttpResponse* response);
 
 class Ui {
  private:
@@ -99,6 +106,10 @@ class Ui {
   void updateAllWidgetsColors();
   GdkRGBA invert_color(const GdkRGBA& c);
   void changeLanguage(const char* language);
+
+  // === API ===
+  std::string prompt(const std::string& prompt);
+  std::string cleanResponse(const std::string& response);
 
   // === CALLBACKS ===
   static void on_window_destroy(GtkWidget* widget, gpointer data);

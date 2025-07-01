@@ -2,8 +2,8 @@
 CXX = g++
 NASM = nasm
 
-CXXFLAGS = -Wall -O2 -I./src `pkg-config --cflags gtk+-3.0`
-LDFLAGS = `pkg-config --libs gtk+-3.0` -lportaudio -lpocketsphinx -lstdc++ -lm -no-pie
+CXXFLAGS = -Wall -O2 -I./src `pkg-config --cflags gtk+-3.0 libcurl jsoncpp`
+LDFLAGS = `pkg-config --libs gtk+-3.0 libcurl jsoncpp` -lportaudio -lpocketsphinx -lstdc++ -lm -no-pie
 
 SRC_DIR = src
 OBJ_DIR = obj
