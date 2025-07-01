@@ -1,20 +1,25 @@
-// main.cpp
-// Interfaz principal y lógica de la aplicación
-
 #include <iostream>
-#include "audio.h"
+#include "ui.hpp"  // Include the UI header
 
-#define PREGUNTA "¿La UCR tiene becas?"
-#define QUESTION "Does UCR offer scholarships?"
+// Button callback function
+void on_button_clicked(GtkWidget* widget, gpointer data) {
+  std::cout << "¡Botón presionado!" << std::endl;
+  // You can cast data back to your window if needed
+  // Ui* window = static_cast<Ui*>(data);
+}
 
-extern "C" void buscar_respuesta(const char* pregunta, char* respuesta, int idioma);
-
-int main() {
-    std::cout << "Bienvenido al Assembler Voice Assistant" << std::endl;
-    char respuesta[1024];
-    buscar_respuesta(PREGUNTA, respuesta, 0);
-    std::cout << PREGUNTA << '\n' << respuesta << std::endl;
-    buscar_respuesta(QUESTION, respuesta, 1);
-    std::cout << QUESTION << '\n' << respuesta << std::endl;
-    return 0;
+int main(int argc, char* argv[]) {
+  // Initialize GTK
+  Ui::initGTK(argc, argv);
+  // Create window
+  Ui window("Assembler Voice Assistant", 600, 400);
+  // Add widgets
+  window.addLabel("ASISTENTE DE VOZ");
+  window.addButton("boton", G_CALLBACK(on_button_clicked), &window);
+  window.addLabel("etiqueta 2");
+  // Show window
+  window.show();
+  // Run main loop
+  Ui::run();
+  return 0;
 }

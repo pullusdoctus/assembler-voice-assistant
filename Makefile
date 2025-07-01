@@ -1,46 +1,51 @@
-# Makefile para Assembler Voice Assistant con SDL2
-
+# Makefile for Assembler Voice Assistant
 CXX = g++
 NASM = nasm
-CXXFLAGS = -Wall -O2 -I./src
-#LDFLAGS = -lpocketsphinx -lsphinxbase -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image
-LDFLAGS = -lpocketsphinx -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
+CXXFLAGS = -Wall -O2 -I./src `pkg-config --cflags gtk+-3.0`
+LDFLAGS = -lpocketsphinx -lstdc++ -lm `pkg-config --libs gtk+-3.0` -no-pie
 
 SRC_DIR = src
 OBJ_DIR = obj
 BIN = voice_assistant
-UI_BIN = ui_demo
 
-SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/audio.cpp
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/audio.o $(OBJ_DIR)/assembler.o
+# Automatically find all source files
+CPP_SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+ASM_SRCS = $(wildcard $(SRC_DIR)/*.asm)
 
-UI_SRC = $(SRC_DIR)/ui.cpp
-UI_OBJ = $(OBJ_DIR)/ui.o
+# Generate object file names
+CPP_OBJS = $(CPP_SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+ASM_OBJS = $(ASM_SRCS:$(SRC_DIR)/%.asm=$(OBJ_DIR)/%.o)
+ALL_OBJS = $(CPP_OBJS) $(ASM_OBJS)
 
-all: $(BIN) $(UI_BIN)
+# Default target
+all: $(BIN)
 
+# Create obj directory
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp | $(OBJ_DIR)
+# Compile C++ files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/audio.o: $(SRC_DIR)/audio.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(OBJ_DIR)/assembler.o: $(SRC_DIR)/assembler.asm | $(OBJ_DIR)
+# Compile assembly files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm | $(OBJ_DIR)
 	$(NASM) -f elf64 $< -o $@
 
-$(BIN): $(OBJS)
+# Link everything into final executable
+$(BIN): $(ALL_OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(OBJ_DIR)/ui.o: $(SRC_DIR)/ui.cpp | $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(UI_BIN): $(OBJ_DIR)/ui.o $(OBJ_DIR)/assembler.o
-	$(CXX) $(CXXFLAGS) $^ -o $@ -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
-
+# Clean up
 clean:
-	rm -rf $(OBJ_DIR) $(BIN) $(UI_BIN)
+	rm -rf $(OBJ_DIR) $(BIN)
 
-.PHONY: all clean
+# Show what files will be compiled (for debugging)
+show:
+	@echo "C++ files: $(CPP_SRCS)"
+	@echo "ASM files: $(ASM_SRCS)"
+	@echo "C++ objects: $(CPP_OBJS)"
+	@echo "ASM objects: $(ASM_OBJS)"
+	@echo "All objects: $(ALL_OBJS)"
+
+.PHONY: all clean show

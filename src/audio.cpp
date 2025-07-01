@@ -1,6 +1,6 @@
 // audio.cpp
 // Procesamiento de audio y reconocimiento de voz con PocketSphinx
-
+/*
 #include "audio.h"
 #include <pocketsphinx.h>
 #include <stdio.h>
@@ -33,4 +33,4 @@ void audio_a_texto(char* buffer, int buffer_size) {
     strncpy(buffer, "[Reconocimiento simulado]", buffer_size);
     buffer[buffer_size-1] = '\0';
     printf("[PocketSphinx] Audio procesado (simulado).\n");
-}
+}*/
