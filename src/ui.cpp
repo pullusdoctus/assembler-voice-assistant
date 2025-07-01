@@ -68,26 +68,6 @@ void Ui::createHeader() {
   // Configuration controls box
   configBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_box_pack_end(GTK_BOX(headerBox), configBox, FALSE, FALSE, 0);
-  // Language combo
-  languageCombo = gtk_combo_box_text_new();
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(languageCombo), "🌐 Español");
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(languageCombo), "🌐 English");
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(languageCombo), "🌐 Français");
-  gtk_combo_box_set_active(GTK_COMBO_BOX(languageCombo), 0);
-  gtk_box_pack_start(GTK_BOX(configBox), languageCombo, FALSE, FALSE, 0);
-  g_signal_connect(languageCombo, "changed", G_CALLBACK(on_language_changed), this);
-  // Font size combo
-  fontSizeCombo = gtk_combo_box_text_new();
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fontSizeCombo), "🅰 Pequeño");
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fontSizeCombo), "🅰 Normal");
-  gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(fontSizeCombo), "🅰 Grande");
-  gtk_combo_box_set_active(GTK_COMBO_BOX(fontSizeCombo), 1);
-  gtk_box_pack_start(GTK_BOX(configBox), fontSizeCombo, FALSE, FALSE, 0);
-  g_signal_connect(fontSizeCombo, "changed", G_CALLBACK(on_font_size_changed), this);
-  // Accessibility button
-  accessibilityButton = gtk_button_new_with_label("⚙️ Accesibilidad");
-  gtk_box_pack_start(GTK_BOX(configBox), accessibilityButton, FALSE, FALSE, 0);
-  g_signal_connect(accessibilityButton, "clicked", G_CALLBACK(on_accessibility_clicked), this);
   // Separator
   GtkWidget* separator1 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start(GTK_BOX(mainBox), separator1, FALSE, FALSE, 5);
@@ -278,10 +258,6 @@ void Ui::applyFontSize() {
   } else {
     comboIndex = 2; // Large
   }
-  // Temporarily block the signal to prevent recursion
-  g_signal_handlers_block_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
-  gtk_combo_box_set_active(GTK_COMBO_BOX(fontSizeCombo), comboIndex);
-  g_signal_handlers_unblock_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
 }
 
 void Ui::updateAllWidgetsFont() {
@@ -296,7 +272,6 @@ void Ui::updateAllWidgetsFont() {
   gtk_widget_override_font(logoLabel, font);
   gtk_widget_override_font(recordButton, font);
   gtk_widget_override_font(sendButton, font);
-  gtk_widget_override_font(accessibilityButton, font);
   // Apply to language buttons
   gtk_widget_override_font(spanishButton, font);
   gtk_widget_override_font(englishButton, font);
@@ -353,7 +328,6 @@ void Ui::updateAllWidgetsColors() {
     logoLabel,
     recordButton,
     sendButton,
-    accessibilityButton,
     spanishButton,
     englishButton,
     frenchButton,
@@ -392,7 +366,6 @@ GdkRGBA Ui::invert_color(const GdkRGBA& c) {
 void Ui::changeLanguage(const char* language) {
   currentLanguage = language;
   std::cout << "Language changed to: " << language << std::endl;
-  // Here you would update all UI text based on the selected language
 }
 
 // Callback implementations

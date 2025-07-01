@@ -13,9 +13,6 @@ class Ui {
   GtkWidget* headerBox;
   GtkWidget* logoLabel;
   GtkWidget* configBox;
-  GtkWidget* languageCombo;
-  GtkWidget* fontSizeCombo;
-  GtkWidget* accessibilityButton;
   // Language selection
   GtkWidget* languageFrame;
   GtkWidget* languageButtonBox;
