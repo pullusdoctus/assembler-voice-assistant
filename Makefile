@@ -1,8 +1,9 @@
 # Makefile for Assembler Voice Assistant
 CXX = g++
 NASM = nasm
-CXXFLAGS = -Wall -O2 -I./src `pkg-config --cflags gtk+-3.0`
-LDFLAGS = -lpocketsphinx -lstdc++ -lm `pkg-config --libs gtk+-3.0` -no-pie
+
+CXXFLAGS = -Wall -O2 -I./src
+LDFLAGS = -lportaudio -lpocketsphinx -lstdc++ -lm -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -36,7 +37,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm | $(OBJ_DIR)
 $(BIN): $(ALL_OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-# Clean up
 clean:
 	rm -rf $(OBJ_DIR) $(BIN)
 
