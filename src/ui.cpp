@@ -247,8 +247,8 @@ const char* Ui::getInputText() {
 void Ui::increaseFontSize() {
   currentFontSize += 2;
   // Apply to all text widgets
-  // Implementation depends on your styling approach
   std::cout << "Font size increased to: " << currentFontSize << std::endl;
+  applyFontSize();
 }
 
 void Ui::decreaseFontSize() {
@@ -256,7 +256,73 @@ void Ui::decreaseFontSize() {
     currentFontSize -= 2;
     // Apply to all text widgets
     std::cout << "Font size decreased to: " << currentFontSize << std::endl;
+    applyFontSize();
   }
+}
+void Ui::applyFontSize() {
+  updateAllWidgetsFontSize();
+  // Also update the font size combo box to reflect the current size
+  int comboIndex;
+  if (currentFontSize <= 10) {
+      comboIndex = 0; // Small
+  } else if (currentFontSize <= 12) {
+      comboIndex = 1; // Normal
+  } else {
+      comboIndex = 2; // Large
+  }
+  // Temporarily block the signal to prevent recursion
+  g_signal_handlers_block_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(fontSizeCombo), comboIndex);
+  g_signal_handlers_unblock_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
+}
+
+void Ui::updateAllWidgetsFontSize() {
+  // Create font description
+  char fontDesc[64];
+  snprintf(fontDesc, sizeof(fontDesc), "Sans %d", currentFontSize);
+  PangoFontDescription* font = pango_font_description_from_string(fontDesc);
+  // Apply to main text widgets
+  gtk_widget_override_font(inputTextView, font);
+  gtk_widget_override_font(responseTextView, font);
+  // Apply to labels and buttons for consistency
+  gtk_widget_override_font(logoLabel, font);
+  gtk_widget_override_font(sendButton, font);
+  gtk_widget_override_font(accessibilityButton, font);
+  // Apply to language buttons
+  gtk_widget_override_font(spanishButton, font);
+  gtk_widget_override_font(englishButton, font);
+  gtk_widget_override_font(frenchButton, font);
+  // Apply to accessibility buttons
+  gtk_widget_override_font(increaseFontButton, font);
+  gtk_widget_override_font(decreaseFontButton, font);
+  gtk_widget_override_font(boldTextButton, font);
+  gtk_widget_override_font(contrastButton, font);
+  // Apply to frame labels (these need special handling)
+  GList* children = gtk_container_get_children(GTK_CONTAINER(languageFrame));
+  if (children && children->data) {
+      GtkWidget* frameLabel = gtk_frame_get_label_widget(GTK_FRAME(languageFrame));
+      if (frameLabel) {
+          gtk_widget_override_font(frameLabel, font);
+      }
+  }
+  g_list_free(children);
+  // Apply to other frame labels
+  GtkWidget* accessibilityFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(accessibilityFrame));
+  if (accessibilityFrameLabel) {
+      gtk_widget_override_font(accessibilityFrameLabel, font);
+  }
+  GtkWidget* inputFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(inputFrame));
+  if (inputFrameLabel) {
+      gtk_widget_override_font(inputFrameLabel, font);
+  }
+  GtkWidget* responseFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(responseFrame));
+  if (responseFrameLabel) {
+      gtk_widget_override_font(responseFrameLabel, font);
+  }
+  // Apply to footer
+  gtk_widget_override_font(footerLabel, font);
+  // Clean up
+  pango_font_description_free(font);
 }
 
 void Ui::toggleBoldText() {
@@ -288,7 +354,16 @@ void Ui::on_language_changed(GtkWidget* widget, gpointer data) {
 void Ui::on_font_size_changed(GtkWidget* widget, gpointer data) {
   Ui* ui = static_cast<Ui*>(data);
   int active = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
-  ui->currentFontSize = 10 + (active * 2); // 10, 12, 14
+  // Map combo box selection to font sizes
+  int newFontSize;
+  switch(active) {
+      case 0: newFontSize = 10; break; // Small
+      case 1: newFontSize = 12; break; // Normal
+      case 2: newFontSize = 14; break; // Large
+      default: newFontSize = 12; break;
+  }
+  ui->currentFontSize = newFontSize;
+  ui->updateAllWidgetsFontSize();
   std::cout << "Font size changed via combo: " << ui->currentFontSize << std::endl;
 }
 
