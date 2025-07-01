@@ -1,22 +1,16 @@
 #include <iostream>
-#include "ui.hpp"  // Include the UI header
+#include "ui.hpp"
 
-// Button callback function
+// Button callback function (legacy - kept for compatibility)
 void on_button_clicked(GtkWidget* widget, gpointer data) {
   std::cout << "¡Botón presionado!" << std::endl;
-  // You can cast data back to your window if needed
-  // Ui* window = static_cast<Ui*>(data);
 }
 
 int main(int argc, char* argv[]) {
   // Initialize GTK
   Ui::initGTK(argc, argv);
-  // Create window
-  Ui window("Assembler Voice Assistant", 600, 400);
-  // Add widgets
-  window.addLabel("ASISTENTE DE VOZ");
-  window.addButton("boton", G_CALLBACK(on_button_clicked), &window);
-  window.addLabel("etiqueta 2");
+  // Create window with appropriate size for the inclusive voice assistant
+  Ui window("InclusivaApp - Asistente de Voz Inclusivo", 800, 700);
   // Show window
   window.show();
   // Run main loop
