@@ -123,7 +123,7 @@ void Ui::createAccessibilityOptions() {
   // Accessibility buttons
   increaseFontButton = gtk_button_new_with_label("+ Aumentar Tamaño");
   decreaseFontButton = gtk_button_new_with_label("- Disminuir Tamaño");
-  boldTextButton = gtk_button_new_with_label("🅱 Texto en Negrita");
+  boldTextButton = gtk_button_new_with_label(boldTextEnabled ? "🅱 Texto Normal" : "🅱 Texto en Negrita");
   contrastButton = gtk_button_new_with_label("🌗 Alto Contraste");
   gtk_box_pack_start(GTK_BOX(accessibilityBox), increaseFontButton, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(accessibilityBox), decreaseFontButton, TRUE, TRUE, 0);
@@ -261,7 +261,7 @@ void Ui::decreaseFontSize() {
 }
 
 void Ui::applyFontSize() {
-  updateAllWidgetsFontSize();
+  updateAllWidgetsFont();
   // Also update the font size combo box to reflect the current size
   int comboIndex;
   if (currentFontSize <= 10) {
@@ -277,10 +277,10 @@ void Ui::applyFontSize() {
   g_signal_handlers_unblock_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
 }
 
-void Ui::updateAllWidgetsFontSize() {
+void Ui::updateAllWidgetsFont() {
   // Create font description
   char fontDesc[64];
-  snprintf(fontDesc, sizeof(fontDesc), "Sans %d", currentFontSize);
+  snprintf(fontDesc, sizeof(fontDesc), "Sans %d%s", currentFontSize, boldTextEnabled ? " Bold" : "");
   PangoFontDescription* font = pango_font_description_from_string(fontDesc);
   // Apply to main text widgets
   gtk_widget_override_font(inputTextView, font);
@@ -327,8 +327,8 @@ void Ui::updateAllWidgetsFontSize() {
 }
 
 void Ui::toggleBoldText() {
-  boldTextEnabled = !boldTextEnabled;
-  // Apply bold styling to text widgets
+  toggle_bold(reinterpret_cast<uint8_t*>(&boldTextEnabled));
+  updateAllWidgetsFont();
   std::cout << "Bold text " << (boldTextEnabled ? "enabled" : "disabled") << std::endl;
 }
 
@@ -358,13 +358,13 @@ void Ui::on_font_size_changed(GtkWidget* widget, gpointer data) {
   // Map combo box selection to font sizes
   int newFontSize;
   switch(active) {
-    case 0: newFontSize = 10; break; // Small
-    case 1: newFontSize = 12; break; // Normal
-    case 2: newFontSize = 14; break; // Large
+    case 0: newFontSize = 12; break; // Small
+    case 1: newFontSize = 16; break; // Normal
+    case 2: newFontSize = 20; break; // Large
     default: newFontSize = 12; break;
   }
   ui->currentFontSize = newFontSize;
-  ui->updateAllWidgetsFontSize();
+  ui->updateAllWidgetsFont();
   std::cout << "Font size changed via combo: " << ui->currentFontSize << std::endl;
 }
 

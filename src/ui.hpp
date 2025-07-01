@@ -94,7 +94,7 @@ class Ui {
   void increaseFontSize();
   void decreaseFontSize();
   void applyFontSize();
-  void updateAllWidgetsFontSize();
+  void updateAllWidgetsFont();
   void toggleBoldText();
   void toggleHighContrast();
   void changeLanguage(const char* language);

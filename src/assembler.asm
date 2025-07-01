@@ -5,6 +5,7 @@ section .data
 section .text
     global increase_font_size
     global decrease_font_size
+    global toggle_bold
 
 ; int increase_font_size(int* currentFontSize)
 ; Returns the new font size
@@ -15,7 +16,7 @@ increase_font_size:
   mov [rdi], eax                  ; currentFontSize = eax
   ret
 
-; int decrease_font_size(int* currentFontSize)  
+; int decrease_font_size(int* currentFontSize)
 ; Returns the new font size
 decrease_font_size:
   mov eax, [rdi]                  ; eax = currentFontSize
@@ -28,4 +29,9 @@ decrease_font_size:
   ret
 .no_decrease:
   mov eax, [rdi]                  ; eax = currentFontSize
+  ret
+
+; void toggle_bold(uint8_t* bold_flag)
+toggle_bold:
+  xor byte[rdi], 1                ; boldTextEnabled = !boldTextEnabled
   ret
