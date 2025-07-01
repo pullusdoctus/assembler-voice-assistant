@@ -261,51 +261,38 @@ void Ui::applyFontSize() {
 }
 
 void Ui::updateAllWidgetsFont() {
-  // Create font description
-  char fontDesc[64];
-  snprintf(fontDesc, sizeof(fontDesc), "Sans %d%s", currentFontSize, boldTextEnabled ? " Bold" : "");
-  PangoFontDescription* font = pango_font_description_from_string(fontDesc);
-  // Apply to main text widgets
-  gtk_widget_override_font(inputTextView, font);
-  gtk_widget_override_font(responseTextView, font);
-  // Apply to labels and buttons for consistency
-  gtk_widget_override_font(logoLabel, font);
-  gtk_widget_override_font(recordButton, font);
-  gtk_widget_override_font(sendButton, font);
-  // Apply to language buttons
-  gtk_widget_override_font(spanishButton, font);
-  gtk_widget_override_font(englishButton, font);
-  gtk_widget_override_font(frenchButton, font);
-  // Apply to accessibility buttons
-  gtk_widget_override_font(increaseFontButton, font);
-  gtk_widget_override_font(decreaseFontButton, font);
-  gtk_widget_override_font(boldTextButton, font);
-  gtk_widget_override_font(contrastButton, font);
-  // Apply to frame labels (these need special handling)
-  GList* children = gtk_container_get_children(GTK_CONTAINER(languageFrame));
-  if (children && children->data) {
-    GtkWidget* frameLabel = gtk_frame_get_label_widget(GTK_FRAME(languageFrame));
-    if (frameLabel) {
-      gtk_widget_override_font(frameLabel, font);
-    }
+  PangoFontDescription* font = pango_font_description_new();
+  pango_font_description_set_family(font, "Sans");
+  pango_font_description_set_size(font, currentFontSize * PANGO_SCALE);  // must be in Pango units
+  pango_font_description_set_weight(font, boldTextEnabled ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL);
+  GtkWidget* widgets[] = {
+    inputTextView,
+    responseTextView,
+    logoLabel,
+    recordButton,
+    sendButton,
+    spanishButton,
+    englishButton,
+    frenchButton,
+    increaseFontButton,
+    decreaseFontButton,
+    boldTextButton,
+    contrastButton,
+    footerLabel
+  };
+  for (GtkWidget* w : widgets) {
+    gtk_widget_override_font(w, font);
   }
-  g_list_free(children);
-  // Apply to other frame labels
-  GtkWidget* accessibilityFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(accessibilityFrame));
-  if (accessibilityFrameLabel) {
-      gtk_widget_override_font(accessibilityFrameLabel, font);
+  // Frame label widgets (special handling)
+  GtkWidget* frameLabels[] = {
+    gtk_frame_get_label_widget(GTK_FRAME(languageFrame)),
+    gtk_frame_get_label_widget(GTK_FRAME(accessibilityFrame)),
+    gtk_frame_get_label_widget(GTK_FRAME(inputFrame)),
+    gtk_frame_get_label_widget(GTK_FRAME(responseFrame))
+  };
+  for (GtkWidget* label : frameLabels) {
+    if (label) gtk_widget_override_font(label, font);
   }
-  GtkWidget* inputFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(inputFrame));
-  if (inputFrameLabel) {
-      gtk_widget_override_font(inputFrameLabel, font);
-  }
-  GtkWidget* responseFrameLabel = gtk_frame_get_label_widget(GTK_FRAME(responseFrame));
-  if (responseFrameLabel) {
-      gtk_widget_override_font(responseFrameLabel, font);
-  }
-  // Apply to footer
-  gtk_widget_override_font(footerLabel, font);
-  // Clean up
   pango_font_description_free(font);
 }
 
