@@ -1,3 +1,4 @@
+#include "assembler.hpp"
 #include "ui.hpp"
 #include <iostream>
 #include <cstring>
@@ -245,30 +246,30 @@ const char* Ui::getInputText() {
 
 // Accessibility methods
 void Ui::increaseFontSize() {
-  currentFontSize += 2;
-  // Apply to all text widgets
-  std::cout << "Font size increased to: " << currentFontSize << std::endl;
+  int newSize = increase_font_size(&currentFontSize);
   applyFontSize();
+  std::cout << "Font size increased to: " << currentFontSize << std::endl;
 }
 
 void Ui::decreaseFontSize() {
-  if (currentFontSize > 8) {
-    currentFontSize -= 2;
-    // Apply to all text widgets
-    std::cout << "Font size decreased to: " << currentFontSize << std::endl;
+  int oldSize = currentFontSize;
+  int newSize = decrease_font_size(&currentFontSize);
+  if (newSize != oldSize) {
     applyFontSize();
+    std::cout << "Font size decreased to: " << currentFontSize << std::endl;
   }
 }
+
 void Ui::applyFontSize() {
   updateAllWidgetsFontSize();
   // Also update the font size combo box to reflect the current size
   int comboIndex;
   if (currentFontSize <= 10) {
-      comboIndex = 0; // Small
+    comboIndex = 0; // Small
   } else if (currentFontSize <= 12) {
-      comboIndex = 1; // Normal
+    comboIndex = 1; // Normal
   } else {
-      comboIndex = 2; // Large
+    comboIndex = 2; // Large
   }
   // Temporarily block the signal to prevent recursion
   g_signal_handlers_block_by_func(fontSizeCombo, (gpointer)G_CALLBACK(on_font_size_changed), this);
@@ -300,10 +301,10 @@ void Ui::updateAllWidgetsFontSize() {
   // Apply to frame labels (these need special handling)
   GList* children = gtk_container_get_children(GTK_CONTAINER(languageFrame));
   if (children && children->data) {
-      GtkWidget* frameLabel = gtk_frame_get_label_widget(GTK_FRAME(languageFrame));
-      if (frameLabel) {
-          gtk_widget_override_font(frameLabel, font);
-      }
+    GtkWidget* frameLabel = gtk_frame_get_label_widget(GTK_FRAME(languageFrame));
+    if (frameLabel) {
+      gtk_widget_override_font(frameLabel, font);
+    }
   }
   g_list_free(children);
   // Apply to other frame labels
@@ -357,10 +358,10 @@ void Ui::on_font_size_changed(GtkWidget* widget, gpointer data) {
   // Map combo box selection to font sizes
   int newFontSize;
   switch(active) {
-      case 0: newFontSize = 10; break; // Small
-      case 1: newFontSize = 12; break; // Normal
-      case 2: newFontSize = 14; break; // Large
-      default: newFontSize = 12; break;
+    case 0: newFontSize = 10; break; // Small
+    case 1: newFontSize = 12; break; // Normal
+    case 2: newFontSize = 14; break; // Large
+    default: newFontSize = 12; break;
   }
   ui->currentFontSize = newFontSize;
   ui->updateAllWidgetsFontSize();
