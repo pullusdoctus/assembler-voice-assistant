@@ -2,6 +2,10 @@
 
 Un asistente de voz mínimo programado en C++ y x86 Assembly.
 
+<p align="center">
+  <img src="assets/screenshot.png" alt="UI del asistente"/>
+</p>
+
 El propósito de este proyecto es demostrar cómo la programación de bajo nivel puede integrarse con tecnologías de más alto nivel con el fin de crear aplicaciones prácticas.
 
 ---
@@ -138,14 +142,6 @@ Para verificar si el backend está funcionando correctamente:
 | `Error: pull model manifest: file does not exist` | Asegúrese de tener el modelo cargado en Ollama (`ollama run deepseek`)                      |
 | GTK error al lanzar                               | Verifique que `libgtk-3-dev` está correctamente instalado                                   |
 | No detecta micrófono                              | Confirme que PulseAudio está corriendo (`pulseaudio --start`)                               |
-
----
-
-## 📸 Capturas (Opcional)
-
-<p align="center">
-  <img src="assets/screenshot.png" alt="UI del asistente" width="400"/>
-</p>
 
 ---
 
