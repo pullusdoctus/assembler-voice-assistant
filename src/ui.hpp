@@ -35,6 +35,7 @@ class Ui {
   GtkWidget* inputLabel;
   GtkWidget* inputTextView;
   GtkWidget* inputScrolled;
+  GtkWidget* recordButton;
   GtkWidget* sendButton;
   // Response section
   GtkWidget* responseFrame;
@@ -108,6 +109,7 @@ class Ui {
   static void on_language_changed(GtkWidget* widget, gpointer data);
   static void on_font_size_changed(GtkWidget* widget, gpointer data);
   static void on_accessibility_clicked(GtkWidget* widget, gpointer data);
+  static void on_record_button_clicked(GtkWidget* widget, gpointer data);
   static void on_send_button_clicked(GtkWidget* widget, gpointer data);
   static void on_increase_font_clicked(GtkWidget* widget, gpointer data);
   static void on_decrease_font_clicked(GtkWidget* widget, gpointer data);

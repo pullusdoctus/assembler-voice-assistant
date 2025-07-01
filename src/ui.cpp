@@ -155,9 +155,16 @@ void Ui::createInputSection() {
   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(inputTextView), GTK_WRAP_WORD);
   gtk_container_add(GTK_CONTAINER(inputScrolled), inputTextView);
   gtk_box_pack_start(GTK_BOX(inputBox), inputScrolled, TRUE, TRUE, 0);
+  // Button box for Record and Send
+  GtkWidget* sendBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+  gtk_box_pack_start(GTK_BOX(inputBox), sendBox, FALSE, FALSE, 0);
+  // Record button
+  recordButton = gtk_button_new_with_label("🎤 Grabar");
+  gtk_box_pack_start(GTK_BOX(sendBox), recordButton, TRUE, TRUE, 0);
+  g_signal_connect(recordButton, "clicked", G_CALLBACK(on_record_button_clicked), this);
   // Send button
   sendButton = gtk_button_new_with_label("Enviar Pregunta");
-  gtk_box_pack_start(GTK_BOX(inputBox), sendButton, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(sendBox), sendButton, TRUE, TRUE, 0);
   g_signal_connect(sendButton, "clicked", G_CALLBACK(on_send_button_clicked), this);
   // Separator
   GtkWidget* separator3 = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -287,6 +294,7 @@ void Ui::updateAllWidgetsFont() {
   gtk_widget_override_font(responseTextView, font);
   // Apply to labels and buttons for consistency
   gtk_widget_override_font(logoLabel, font);
+  gtk_widget_override_font(recordButton, font);
   gtk_widget_override_font(sendButton, font);
   gtk_widget_override_font(accessibilityButton, font);
   // Apply to language buttons
@@ -343,6 +351,7 @@ void Ui::updateAllWidgetsColors() {
     inputTextView,
     responseTextView,
     logoLabel,
+    recordButton,
     sendButton,
     accessibilityButton,
     spanishButton,
@@ -412,6 +421,11 @@ void Ui::on_font_size_changed(GtkWidget* widget, gpointer data) {
 
 void Ui::on_accessibility_clicked(GtkWidget* widget, gpointer data) {
   std::cout << "Accessibility menu clicked" << std::endl;
+}
+
+void Ui::on_record_button_clicked(GtkWidget* widget, gpointer data) {
+  Ui* ui = static_cast<Ui*>(data);
+  std::cout << "🎤 Record button clicked" << std::endl;
 }
 
 void Ui::on_send_button_clicked(GtkWidget* widget, gpointer data) {
