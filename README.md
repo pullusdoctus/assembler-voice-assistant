@@ -153,8 +153,8 @@ Este proyecto está licenciado bajo la [MIT License](./LICENSE).
 
 ## 👤 Créditos
 
-* Jeremy Rojas — [@doctuspullus](https://github.com/doctuspullus)
-* Jhonny Leung - [@YiYhuan](https://github.com/YiYhuan)
+* [@doctuspullus](https://github.com/doctuspullus)
+* [@YiYhuan](https://github.com/YiYhuan)
 * [Sleyter28](https://github.com/Sleyter28) — API para conectar con una instancia local de DeepSeek
 
 ---
