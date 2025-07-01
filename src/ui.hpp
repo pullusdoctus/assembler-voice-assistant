@@ -47,6 +47,7 @@ class Ui {
   bool highContrastEnabled;
   int currentFontSize;
   const char* currentLanguage;
+  bool recording;
 
  public:
   // constructor

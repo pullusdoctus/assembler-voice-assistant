@@ -1,6 +1,6 @@
 // audio.cpp
 // Procesamiento de audio y reconocimiento de voz con PocketSphinx
-#include "audio.h"
+#include "audio.hpp"
 #include <pocketsphinx.h>
 #include <portaudio.h>
 #include <atomic>

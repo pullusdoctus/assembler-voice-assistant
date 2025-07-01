@@ -1,4 +1,5 @@
 #include "assembler.hpp"
+#include "audio.hpp"
 #include "ui.hpp"
 #include <iostream>
 #include <cstring>
@@ -12,6 +13,7 @@ Ui::Ui(const char* title, int width, int height) : w(width), h(height) {
   // Initialize state variables
   boldTextEnabled = false;
   highContrastEnabled = false;
+  recording = false;
   currentFontSize = 12;
   currentLanguage = "Español";
   // Create main window
@@ -385,6 +387,32 @@ void Ui::on_accessibility_clicked(GtkWidget* widget, gpointer data) {
 
 void Ui::on_record_button_clicked(GtkWidget* widget, gpointer data) {
   Ui* ui = static_cast<Ui*>(data);
+  if (!ui->recording) {
+    // Start recording
+    std::cout << "🎤 Starting recording..." << std::endl;
+    // Update button appearance
+    gtk_button_set_label(GTK_BUTTON(ui->recordButton), "⏹️ Detener");
+    // Call the recording start function
+    iniciar_grabacion_microfono();
+    // Update state
+    ui->recording = true;
+    std::cout << "Recording started. Click button again to stop." << std::endl;
+  } else {
+    // Stop recording and get result
+    std::cout << "⏹️ Stopping recording..." << std::endl;
+    // Update button appearance
+    gtk_button_set_label(GTK_BUTTON(ui->recordButton), "🎤 Grabar");
+    // Buffer to receive the recognized text
+    char recognized_text[1024];
+    // Call the recording stop function
+    detener_y_reconocer_microfono(recognized_text, sizeof(recognized_text));
+    // Update state
+    ui->recording = false;
+    // Display the recognized text in the input field
+    ui->setInputText(recognized_text);
+    std::cout << "Recording stopped. Recognized text: " << recognized_text << std::endl;
+  }
+
   std::cout << "🎤 Record button clicked" << std::endl;
 }
 
