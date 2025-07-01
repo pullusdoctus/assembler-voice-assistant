@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 #include <string>
 #include <vector>
+#include "audio.h"
 
 #define FONT_PATH "./font/static/OpenSans-Regular.ttf"
 
@@ -49,6 +50,11 @@ void renderSeparator(SDL_Renderer* renderer, int x, int y, int w, SDL_Color colo
 }
 
 extern "C" void buscar_respuesta(const char* pregunta, char* respuesta, int idioma);
+
+// --- NUEVAS FUNCIONES PARA CONTROLAR LA GRABACIÓN ---
+// Estas funciones deben implementarse en audio.cpp
+extern "C" void iniciar_grabacion_microfono();
+extern "C" void detener_y_reconocer_microfono(char* buffer, int buffer_size);
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -192,12 +198,16 @@ int main(int argc, char* argv[]) {
                             case 1: ui.respuesta = "[Listening... press again to finish]"; break;
                             case 2: ui.respuesta = "[Écoute... appuyez à nouveau pour terminer]"; break;
                         }
+                        iniciar_grabacion_microfono();
                     } else {
                         escuchando = false;
+                        char buffer[512];
+                        detener_y_reconocer_microfono(buffer, sizeof(buffer));
+                        ui.pregunta = buffer;
                         switch (ui.idioma) {
-                            case 0: ui.respuesta = "No entendí, ¿puedes repetirlo?"; break;
-                            case 1: ui.respuesta = "Sorry, I didn't understand. Can you repeat?"; break;
-                            case 2: ui.respuesta = "Je n'ai pas compris, pouvez-vous répéter ?"; break;
+                            case 0: ui.respuesta = "[Reconocimiento finalizado]"; break;
+                            case 1: ui.respuesta = "[Recognition finished]"; break;
+                            case 2: ui.respuesta = "[Reconnaissance terminée]"; break;
                         }
                     }
                 }

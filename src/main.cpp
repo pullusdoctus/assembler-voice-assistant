@@ -18,7 +18,7 @@ void reconocer_voz_archivo(const char* archivo_wav) {
     ps_decoder_t *ps;
     cmd_ln_t *config;
     FILE *fh;
-    char const *hyp, *uttid;
+    char const *hyp;
     int16 buf[512];
     int rv;
     int32 score;

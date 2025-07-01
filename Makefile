@@ -37,8 +37,8 @@ $(BIN): $(OBJS)
 $(OBJ_DIR)/ui.o: $(SRC_DIR)/ui.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(UI_BIN): $(OBJ_DIR)/ui.o $(OBJ_DIR)/assembler.o
-	$(CXX) $(CXXFLAGS) $^ -o $@ -lSDL2 -lSDL2_ttf -lSDL2_image -no-pie
+$(UI_BIN): $(OBJ_DIR)/ui.o $(OBJ_DIR)/audio.o $(OBJ_DIR)/assembler.o
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN) $(UI_BIN)
